@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ringkasan — Adsy CRM</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+#summary-wrap{flex:1;overflow-y:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:24px}
+.big-card{background:#161b22;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px}
+.big-card h3{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;font-weight:700}
+.stage-bar-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12.5px}
+.stage-bar-row .lbl{width:160px;color:#94a3b8;flex-shrink:0}
+.stage-bar-track{flex:1;height:6px;background:#0d1117;border-radius:3px;overflow:hidden}
+.stage-bar-fill{height:100%;border-radius:3px}
+.stage-bar-num{width:24px;text-align:right;color:#e2e8f0;font-weight:600;flex-shrink:0}
+.quick-link{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:8px;margin-bottom:8px;cursor:pointer}
+.quick-link:hover{border-color:#8b5cf6}
+.quick-link .ql-icon{font-size:18px}
+.quick-link .ql-text{flex:1}
+.quick-link .ql-title{font-size:13px;font-weight:600;color:#e2e8f0}
+.quick-link .ql-sub{font-size:11px;color:#64748b}
+</style>
+</head>
+<body>
+
+<div id="sidebar"></div>
+
+<div id="main">
+  <div id="top-header">
+    <div class="th-left">
+      <h1>Ringkasan</h1>
+      <p>Overview pipeline post-purchase Adsy CRM</p>
+    </div>
+    <div class="th-right">
+      <div class="th-notif">🔔</div>
+    </div>
+  </div>
+
+  <div id="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon blue">📦</div>
+      <div class="stat-text"><div class="stat-label">Total Aktif</div><div class="stat-num" id="statTotal">0</div><div class="stat-sub muted">di seluruh pipeline</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber">🔥</div>
+      <div class="stat-text"><div class="stat-label">Hot Lead</div><div class="stat-num" id="statHot">0</div><div class="stat-sub ok">siap closing</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-text"><div class="stat-label">Closing Repeat</div><div class="stat-num" id="statClosing">0</div><div class="stat-sub ok">bulan ini</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">😴</div>
+      <div class="stat-text"><div class="stat-label">Dormant</div><div class="stat-num" id="statDormant">0</div><div class="stat-sub danger">perlu re-engage</div></div>
+    </div>
+    <div class="ai-engine-card">
+      <div class="ai-engine-title">✨ AI Follow-up Engine</div>
+      <div class="ai-engine-sub">Full otomatis</div>
+      <div class="ai-engine-stat">Sentiment hari ini: <b>82% positif</b></div>
+    </div>
+  </div>
+
+  <div id="summary-wrap">
+    <div class="grid">
+      <div class="big-card" style="grid-column:span 2">
+        <h3>Distribusi Pipeline</h3>
+        <div id="stageBars"></div>
+      </div>
+      <div class="big-card">
+        <h3>Akses Cepat</h3>
+        <div class="quick-link" onclick="location.href='pipeline.html'">
+          <span class="ql-icon">📋</span>
+          <div class="ql-text"><div class="ql-title">Buka Pipeline</div><div class="ql-sub">Lihat & geser kartu Kanban</div></div>
+        </div>
+        <div class="quick-link" onclick="location.href='conversations.html'">
+          <span class="ql-icon">💬</span>
+          <div class="ql-text"><div class="ql-title">Pantau Percakapan</div><div class="ql-sub">Lihat obrolan AI dengan pelanggan</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+renderSidebar('index.html');
+
+const total = MOCK_PIPELINE.length;
+const hot = MOCK_PIPELINE.filter(c=>c.stage==='hotlead').length;
+const closing = MOCK_PIPELINE.filter(c=>c.stage==='closing').length;
+const dormant = MOCK_PIPELINE.filter(c=>c.stage==='dormant').length;
+document.getElementById('statTotal').textContent = total;
+document.getElementById('statHot').textContent = hot;
+document.getElementById('statClosing').textContent = closing;
+document.getElementById('statDormant').textContent = dormant;
+
+document.getElementById('stageBars').innerHTML = STAGES.map(s=>{
+  const count = MOCK_PIPELINE.filter(c=>c.stage===s.id).length;
+  const pct = total ? Math.round((count/total)*100) : 0;
+  return `<div class="stage-bar-row">
+    <span class="lbl">${s.label}</span>
+    <div class="stage-bar-track"><div class="stage-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
+    <span class="stage-bar-num">${count}</span>
+  </div>`;
+}).join('');
+</script>
+</body>
+</html>
